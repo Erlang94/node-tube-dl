@@ -1,0 +1,44 @@
+{
+  "name": "node-tube-dl",
+  "version": "1.0.1",
+  "description": "Youtube downloader",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "directories": {
+    "lib": "lib",
+    "src": "src",
+    "test": "test"
+  },
+  "bugs": {
+    "url": "https://github.com/Erlang94/node-tube-dl/issues"
+  },
+  "homepage": "https://github.com/Erlang94/node-tube-dl#readme",
+  "dependencies": {
+    "fluent-ffmpeg": "^2.1.2",
+    "yt-search": "^2.10.3",
+    "ytdl-core": "^4.11.2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.18",
+    "typescript": "^4.9.4"
+  },
+  "scripts": {
+    "test": "node test/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Erlang94/node-tube-dl.git"
+  },
+  "keywords": [
+    "youtube",
+    "youtube-downloader",
+    "ytdl-core",
+    "yt-search",
+    "node-tube",
+    "youtube-dl",
+    "yt",
+    "youtube-search"
+  ],
+  "author": "",
+  "license": "MIT"
+}
