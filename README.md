@@ -1,12 +1,13 @@
 ## youtube downloader
 
-#### Install ffmpeg on your machine
+### Note
+To use this library you must have [FFmpeg](https://ffmpeg.org) installed on your computer
 
-#### Installing
+### Installing package
 ```bash
 npm install node-tube-dl
 ```
-#### Example download audio
+### Example download audio
 
 ```js
 // import { YouTubeAudio } from "node-tube-dl" // Typescript
@@ -26,7 +27,7 @@ new YouTubeAudio(url)
     .catch(e => console.log(e))
 ```
 
-#### Example download video
+### Example download video
 
 ```js
 // import { YouTubeVideo } from "node-tube-dl" // Typescript
@@ -43,7 +44,7 @@ new YouTubeVideo(url)
     .catch(e => console.log(e))
 ```
 
-#### Search videos
+### Search videos
 
 ```js
 // import { YouTube } from "node-tube-dl" // Typescript
