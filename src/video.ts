@@ -1,4 +1,5 @@
 import fs from "node:fs"
+import { join } from "node:path"
 import crypto from "node:crypto"
 import ytdl from "ytdl-core"
 import ffmpeg from "fluent-ffmpeg"
@@ -45,17 +46,18 @@ export class YouTubeVideo extends YouTube {
             })
     }
     
-    public async download(): Promise<Awaited<ReturnType<typeof this.getSpecificVideo>> & { video: { path: string, quality: string } }> {
+    public async download(): Promise<Awaited<ReturnType<typeof this.getSpecificVideo>> & { video: { path: string } }> {
         try {
             const metadata = await this.getSpecificVideo()
-            const videoPath = this.directory+crypto.randomBytes(9).toString("hex")+".mp4"
-            const audioPath = this.directory+crypto.randomBytes(9).toString("hex")+".m4a"
+            if (!fs.existsSync(join(__dirname, "../temp"))) fs.mkdirSync(join(__dirname, "../temp"))
+            const tempVideoPath = join(__dirname, "../temp/"+crypto.randomBytes(9).toString("hex")+".mp4")
+            const tempAudioPath = join(__dirname, "../temp/"+crypto.randomBytes(9).toString("hex")+".m4a")
             const videoStream = ytdl(metadata.url, { filter: "videoonly", quality: this.quality })
             const video = await new Promise((resolve, reject) => {
                 ffmpeg(videoStream)
-                    .save(videoPath)
+                    .save(tempVideoPath)
                     .on("error", (e) => reject(e))
-                    .on("end", () => resolve(videoPath))
+                    .on("end", () => resolve(tempVideoPath))
             })
             const audioStream = ytdl(metadata.url, { filter: "audioonly", quality: 140 })
             const audio = await new Promise((resolve, reject) => {
@@ -63,15 +65,14 @@ export class YouTubeVideo extends YouTube {
                     .audioCodec("aac")
                     .audioBitrate(128)
                     .audioChannels(2)
-                    .save(audioPath)
+                    .save(tempAudioPath)
                     .on("error", (e) => reject(e))
-                    .on("end", () => resolve(audioPath))
+                    .on("end", () => resolve(tempAudioPath))
             })
             const result = await this.addAudio(audio as string, video as string, metadata.title)
             return {
                 video: {
                     path: result,
-                    quality: this.quality,
                 },
                 ...metadata,
             }

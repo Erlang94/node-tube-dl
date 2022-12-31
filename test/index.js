@@ -3,7 +3,7 @@ const { join } = require("path")
 
 function test1(url) {
     new YouTubeVideo(url)
-        .setQuality("2160p") // Avalable quality: 144p, 240p, 360p, 480p, 720p, 1080p, 1440p, 2160p
+        .setQuality("1080p") // Avalable quality: 144p, 240p, 360p, 480p, 720p, 1080p, 1440p, 2160p
         .setOutDir("test/bin/")
         .download()
         .then(data => console.log(data))
