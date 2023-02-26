@@ -1,9 +1,8 @@
-const { YouTubeVideo, YouTubeAudio, YouTube } = require("../lib")
-const { join } = require("path")
+const { YouTubeVideo, YouTubeAudio, YouTubeSearch, YouTube } = require("../lib")
 
 function test1(url) {
     new YouTubeVideo(url)
-        .setQuality("1080p") // Avalable quality: 144p, 240p, 360p, 480p, 720p, 1080p, 1440p, 2160p
+        .setQuality("240p") // Available quality: 144p, 240p, 360p, 480p, 720p, 1080p
         .setOutDir("test/bin/")
         .download()
         .then(data => console.log(data))
@@ -25,14 +24,14 @@ function test2(url) {
 function test3(query, p) {
     switch (p) {
         case "all": {
-            new YouTube(query)
+            new YouTubeSearch(query)
                 .getAllVideo()
                 .then(data => console.log(data.videos))
                 .catch(e => console.log(e))
                 break
         }
         case "specific": {
-            new YouTube(query)
+            new YouTubeSearch(query)
                 .getSpecificVideo()
                 .then(data => console.log(data))
                 .catch(e => console.log(e))
@@ -44,6 +43,6 @@ function test3(query, p) {
 const url = "https://youtube.com/watch?v=_QW9gBdDU1c"
 const query = "Axel Johansson"
 
-test1(url)
-// test2(url)
-// test3(query, "all")
+//test1(url)
+test2(url)
+// test3(query, "specific")

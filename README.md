@@ -17,7 +17,7 @@ const url = "https://youtube.com/watch?v=_QW9gBdDU1c"
 const myfolder = "./bin/"
 
 new YouTubeAudio(url)
-    .setCodec("aac") // get available codec -> ffmpeg.org
+    .setCodec("aac") // Get available codec -> ffmpeg.org
     .setBitrate("128k")
     .setChannels(2)
     .setOutDir(myfolder)
@@ -37,7 +37,7 @@ const url = "https://youtube.com/watch?v=_QW9gBdDU1c"
 const myfolder = "./bin/"
 
 new YouTubeVideo(url)
-    .setQuality("1080p") // Avalable quality: 144p, 240p, 360p, 480p, 720p, 1080p, 1440p, 2160p
+    .setQuality("480p") // Available quality: 144p, 240p, 360p, 480p, 720p, 1080p, 1440p
     .setOutDir(myfolder)
     .download()
     .then(result => console.log(result))
@@ -47,19 +47,19 @@ new YouTubeVideo(url)
 ### Search videos
 
 ```js
-// import { YouTube } from "node-tube-dl" // Typescript
-const { YouTube } = require("node-tube-dl")
+// import { YouTubeSearch } from "node-tube-dl" // Typescript
+const { YouTubeSearch } = require("node-tube-dl")
 
 const query = "Axel Johansson"
 
 // get all videos
-new YouTube(query)
+new YouTubeSearch(query)
     .getAllVideo()
     .then(result => console.log(result.videos))
     .catch(e => console.log(e))
     
 // get specific video
-new YouTube(query)
+new YouTubeSearch(query)
     .getSpecificVideo()
     .then(result => console.log(result))
     .catch(e => console.log(e))

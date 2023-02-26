@@ -1,9 +1,9 @@
 import fs from "node:fs"
 import ytdl from "ytdl-core"
 import ffmpeg from "fluent-ffmpeg"
-import { YouTube } from "./base"
+import { YouTubeSearch } from "./search"
 
-export class YouTubeAudio extends YouTube {
+export class YouTubeAudio extends YouTubeSearch {
     private codec: string
     private bitrate: string
     private channels: number
@@ -41,27 +41,29 @@ export class YouTubeAudio extends YouTube {
         return this
     }
     
-    public async download(): Promise<Awaited<ReturnType<typeof this.getSpecificVideo>> & { audio: { path: string } }> {
-        try {
-            const metadata = await this.getSpecificVideo()
-            const stream = ytdl(metadata.url, { filter: "audioonly", quality: 140 })
-            const path = this.directory+metadata.title+this.extension
-            const audio = await new Promise((resolve) => {
+    public download(): Promise<any> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const metadata = await this.getSpecificVideo()
+                const audiopath = this.directory+metadata.title+this.extension
+                const stream = ytdl(metadata.url, { filter: "audioonly", quality: 140 })
+                
                 ffmpeg(stream)
                     .audioCodec(this.codec)
                     .audioBitrate(this.bitrate)
                     .audioChannels(this.channels)
-                    .save(path)
-                    .on("end", () => resolve(path))
-            })
-            return {
-                ...metadata,
-                audio: {
-                    path: audio
-                }
+                    .save(audiopath)
+                    .on("error", (error) => reject(error))
+                
+                resolve({
+                    ...metadata,
+                    audio: {
+                        path: audiopath
+                    }
+                })
+            } catch (error) {
+                reject(error)
             }
-        } catch (e) {
-            throw e
-        }
+        })
     }
 }

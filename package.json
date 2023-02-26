@@ -1,6 +1,6 @@
 {
   "name": "node-tube-dl",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Youtube downloader",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
