@@ -43,6 +43,6 @@ function test3(query, p) {
 const url = "https://youtube.com/watch?v=_QW9gBdDU1c"
 const query = "Axel Johansson"
 
-//test1(url)
-test2(url)
+test1(url)
+// test2(url)
 // test3(query, "specific")

@@ -26,10 +26,10 @@ export class YouTubeVideo extends YouTubeSearch {
         return this
     }
     
-    private addAudio(audiopath: string, videopath: string, title: string): Promise<string> {
+    private addAudio(audiopath: string, video: Readable, title: string): Promise<string> {
         return new Promise((resolve, reject) => {
             const output = this.directory+title+".mp4"
-            ffmpeg(videopath)
+            ffmpeg(video)
                 .addInput(audiopath)
                 .outputOptions([
                     "-map", "0",
@@ -41,7 +41,6 @@ export class YouTubeVideo extends YouTubeSearch {
                 .on("error", (error) => reject(error))
                 .on("end", () => {
                     fs.unlinkSync(audiopath)
-                    fs.unlinkSync(videopath)
                     resolve(output)
                 })
             })
@@ -61,13 +60,11 @@ export class YouTubeVideo extends YouTubeSearch {
             try {
                 const metadata = await this.getSpecificVideo()
                 if (!fs.existsSync(join(__dirname, "../temp"))) fs.mkdirSync(join(__dirname, "../temp"))
-                const tempVideoPath = join(__dirname, "../temp/"+crypto.randomBytes(9).toString("hex")+".mp4")
                 const tempAudioPath = join(__dirname, "../temp/"+crypto.randomBytes(9).toString("hex")+".m4a")
                 const videoStream = ytdl(metadata.url, { filter: "videoonly", quality: this.quality })
                 const audioStream = ytdl(metadata.url, { filter: "audioonly", quality: 140 })
-                await this.streamToFile(videoStream, tempVideoPath)
                 await this.streamToFile(audioStream, tempAudioPath)
-                const result = await this.addAudio(tempAudioPath, tempVideoPath, metadata.title)
+                const result = await this.addAudio(tempAudioPath, videoStream, metadata.title)
                 resolve({
                     ...metadata,
                     video: {

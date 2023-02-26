@@ -54,13 +54,14 @@ export class YouTubeAudio extends YouTubeSearch {
                     .audioChannels(this.channels)
                     .save(audiopath)
                     .on("error", (error) => reject(error))
-                
-                resolve({
-                    ...metadata,
-                    audio: {
-                        path: audiopath
-                    }
-                })
+                    .on("end", () => {
+                        resolve({
+                            ...metadata,
+                            audio: {
+                                path: audiopath
+                            }
+                        })
+                    })
             } catch (error) {
                 reject(error)
             }
