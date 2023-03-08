@@ -34,6 +34,8 @@ new YouTubeAudio(url)
 const { YouTubeAudioV2 } = require("node-tube-dl")
 const fs = require("fs/promises")
 
+const url = "https://youtube.com/watch?v=_QW9gBdDU1c"
+
 // Example toBuffer
 // Audio output encoded to Ogg Vorbis (libvorbis), Audio file extension: .ogg
 new YouTubeAudioV2(url)
