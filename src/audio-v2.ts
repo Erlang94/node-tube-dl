@@ -12,13 +12,13 @@ export class YouTubeAudioV2 extends YouTubeSearch {
         super(url)
     }
 
-    public toFile(path: string): YouTubeAudioV2 {
+    public setToFile(path: string): YouTubeAudioV2 {
         path = path.endsWith("/") ? path : path + "/"
         this.file = { path, chosen: true }
         return this
     }
 
-    public toBuffer(): YouTubeAudioV2 {
+    public setToBuffer(): YouTubeAudioV2 {
         this.buffer = { chosen: true }
         return this
     }

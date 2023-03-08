@@ -45,7 +45,7 @@ function test4(url, t) {
     switch (t) {
         case 1: {
             new YouTubeAudioV2(url)
-                .toBuffer()
+                .setToBuffer()
                 .download()
                 .then(async (data) => {
                     await fs.writeFile("test/bin/audio.ogg", data.audioBuffer)
@@ -56,7 +56,7 @@ function test4(url, t) {
         }
         case 2: {
             new YouTubeAudioV2(url)
-                .toFile("test/bin/")
+                .setToFile("test/bin/")
                 .download()
                 .then((data) => {
                     console.log(data)

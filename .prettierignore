@@ -1,9 +1,8 @@
 node_modules/
 *.json
 .git/
-lib/
-*.md
-*.lock
-*.txt
-temp/
 test/
+*.lock
+lib/
+*.txt
+*.md
