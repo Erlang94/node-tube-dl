@@ -42,7 +42,9 @@ new YouTubeAudioV2(url)
     .toBuffer()
     .download()
     .then(async (data) => {
+        await fs.mkdir("./bin/")
         await fs.writeFile("./bin/audio.ogg", data.audioBuffer)
+        
         console.log(data)
     })
     .catch((e) => console.log(e))
