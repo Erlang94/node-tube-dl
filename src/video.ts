@@ -9,43 +9,44 @@ import { YouTubeSearch } from "./search"
 export class YouTubeVideo extends YouTubeSearch {
     private quality: string
     private directory: string
-    
+
     constructor(url: string) {
         super(url)
     }
-    
+
     public setQuality(quality: string): YouTubeVideo {
         this.quality = this.parseQuality(quality)
         return this
     }
-    
+
     public setOutDir(directory: string): YouTubeVideo {
-        directory = directory.endsWith("/") ? directory : directory+"/"
+        directory = directory.endsWith("/") ? directory : directory + "/"
         if (!fs.existsSync(directory)) fs.mkdirSync(directory)
         this.directory = directory
         return this
     }
-    
+
     private addAudio(audiopath: string, video: Readable, title: string): Promise<string> {
         return new Promise((resolve, reject) => {
-            const output = this.directory+title+".mp4"
+            const output = this.directory + title + ".mp4"
             ffmpeg(video)
                 .addInput(audiopath)
-                .outputOptions([
-                    "-map", "0",
-                    "-map", "1:a",
-                    "-c:v", "copy",
-                    "-shortest"
-                ])
+                .outputOptions(["-map", "0", "-map", "1:a", "-c:v", "copy", "-shortest"])
                 .save(output)
                 .on("error", (error) => reject(error))
                 .on("end", () => {
                     fs.unlinkSync(audiopath)
                     resolve(output)
                 })
-            })
+        })
     }
-    
+
+    private createTempDir() {
+        if (!fs.existsSync(join(__dirname, "../temp"))) {
+            fs.mkdirSync(join(__dirname, "../temp"))
+        }
+    }
+
     private streamToFile(input: Readable, output: string): Promise<string> {
         return new Promise((resolve, reject) => {
             ffmpeg(input)
@@ -54,13 +55,13 @@ export class YouTubeVideo extends YouTubeSearch {
                 .on("end", () => resolve(output))
         })
     }
-    
+
     public async download(): Promise<any> {
         return new Promise(async (resolve, reject) => {
             try {
                 const metadata = await this.getSpecificVideo()
-                if (!fs.existsSync(join(__dirname, "../temp"))) fs.mkdirSync(join(__dirname, "../temp"))
-                const tempAudioPath = join(__dirname, "../temp/"+crypto.randomBytes(9).toString("hex")+".m4a")
+                this.createTempDir()
+                const tempAudioPath = join(__dirname, "../temp/" + crypto.randomBytes(9).toString("hex") + ".m4a")
                 const videoStream = ytdl(metadata.url, { filter: "videoonly", quality: this.quality })
                 const audioStream = ytdl(metadata.url, { filter: "audioonly", quality: 140 })
                 await this.streamToFile(audioStream, tempAudioPath)
@@ -68,15 +69,15 @@ export class YouTubeVideo extends YouTubeSearch {
                 resolve({
                     ...metadata,
                     video: {
-                        path: result
-                    }
+                        path: result,
+                    },
                 })
             } catch (error) {
                 reject(error)
             }
         })
     }
-    
+
     private parseQuality(quality: string): string {
         let result: string
         switch (quality) {
@@ -112,7 +113,8 @@ export class YouTubeVideo extends YouTubeSearch {
                 result = "401"
                 break
             }
-            default: throw Error("Quality not found!")
+            default:
+                throw Error("Quality not found!")
         }
         return result
     }

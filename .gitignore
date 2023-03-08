@@ -3,3 +3,4 @@ lib/
 .npmignore
 test/bin/
 yarn.lock
+temp/

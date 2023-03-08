@@ -1,12 +1,13 @@
-const { YouTubeVideo, YouTubeAudio, YouTubeSearch, YouTube } = require("../lib")
+const { YouTubeVideo, YouTubeAudio, YouTubeSearch, YouTube, YouTubeAudioV2 } = require("../lib")
+const fs = require("fs/promises")
 
 function test1(url) {
     new YouTubeVideo(url)
-        .setQuality("240p") // Available quality: 144p, 240p, 360p, 480p, 720p, 1080p
+        .setQuality("480p") // Available quality: 144p, 240p, 360p, 480p, 720p, 1080p
         .setOutDir("test/bin/")
         .download()
-        .then(data => console.log(data))
-        .catch(e => console.log(e))
+        .then((data) => console.log(data))
+        .catch((e) => console.log(e))
 }
 
 function test2(url) {
@@ -17,8 +18,8 @@ function test2(url) {
         .setOutDir("test/bin/")
         .setExtension(".m4a")
         .download()
-        .then(data => console.log(data))
-        .catch(e => console.log(e))
+        .then((data) => console.log(data))
+        .catch((e) => console.log(e))
 }
 
 function test3(query, p) {
@@ -26,16 +27,42 @@ function test3(query, p) {
         case "all": {
             new YouTubeSearch(query)
                 .getAllVideo()
-                .then(data => console.log(data.videos))
-                .catch(e => console.log(e))
-                break
+                .then((data) => console.log(data.videos))
+                .catch((e) => console.log(e))
+            break
         }
         case "specific": {
             new YouTubeSearch(query)
                 .getSpecificVideo()
-                .then(data => console.log(data))
-                .catch(e => console.log(e))
-                break
+                .then((data) => console.log(data))
+                .catch((e) => console.log(e))
+            break
+        }
+    }
+}
+
+function test4(url, t) {
+    switch (t) {
+        case 1: {
+            new YouTubeAudioV2(url)
+                .toBuffer()
+                .download()
+                .then(async (data) => {
+                    await fs.writeFile("test/bin/audio.ogg", data.audioBuffer)
+                    console.log(data)
+                })
+                .catch((e) => console.log(e))
+            break
+        }
+        case 2: {
+            new YouTubeAudioV2(url)
+                .toFile("test/bin/")
+                .download()
+                .then((data) => {
+                    console.log(data)
+                })
+                .catch((e) => console.log(e))
+            break
         }
     }
 }
@@ -43,6 +70,7 @@ function test3(query, p) {
 const url = "https://youtube.com/watch?v=_QW9gBdDU1c"
 const query = "Axel Johansson"
 
-test1(url)
+// test1(url)
 // test2(url)
 // test3(query, "specific")
+test4(url, 1)

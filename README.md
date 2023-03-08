@@ -27,6 +27,35 @@ new YouTubeAudio(url)
     .catch(e => console.log(e))
 ```
 
+### Example download audio v2
+
+```js
+// import { YouTubeAudioV2 } from "node-tube-dl" // Typescript
+const { YouTubeAudioV2 } = require("node-tube-dl")
+const fs = require("fs/promises")
+
+// Example toBuffer
+// Audio output encoded to Ogg Vorbis (libvorbis), Audio file extension: .ogg
+new YouTubeAudioV2(url)
+    .toBuffer()
+    .download()
+    .then(async (data) => {
+        await fs.writeFile("./bin/audio.ogg", data.audioBuffer)
+        console.log(data)
+    })
+    .catch((e) => console.log(e))
+
+// Example toFile
+// Audio output encoded to Ogg Vorbis (libvorbis), Audio file extension: .ogg
+new YouTubeAudioV2(url)
+    .toFile("./bin") // path to your folder
+    .download()
+    .then((data) => {
+        console.log(data)
+    })
+    .catch((e) => console.log(e))
+```
+
 ### Example download video
 
 ```js
