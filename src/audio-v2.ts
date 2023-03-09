@@ -5,68 +5,75 @@ import ffmpeg from "fluent-ffmpeg"
 import { YouTubeSearch } from "./search"
 
 export class YouTubeAudioV2 extends YouTubeSearch {
-    private file: { path: string; chosen: boolean }
-    private buffer: { buffer?: Buffer; chosen: boolean }
+    private file: string | null
+    private useBuffer: boolean
+    private fname: string
 
     constructor(url: string) {
         super(url)
+        this.file = null
+        this.useBuffer = false
     }
 
-    public setToFile(path: string): YouTubeAudioV2 {
-        path = path.endsWith("/") ? path : path + "/"
-        this.file = { path, chosen: true }
+    public outputFile(path: string): YouTubeAudioV2 {
+        this.file = path
         return this
     }
 
-    public setToBuffer(): YouTubeAudioV2 {
-        this.buffer = { chosen: true }
+    public outputBuffer(): YouTubeAudioV2 {
+        this.useBuffer = true
         return this
     }
 
-    private createTempDir() {
-        if (!fs.existsSync(join(__dirname, "../temp"))) {
-            fs.mkdirSync(join(__dirname, "../temp"))
-        }
+    public filename(fname: string): YouTubeAudioV2 {
+        this.fname = fname
+        return this
     }
 
     public download(): Promise<any> {
         return new Promise(async (resolve, reject) => {
             try {
-                if (this.file && this.file.chosen && this.buffer && this.buffer.chosen) {
-                    throw Error("Choose one: toFile or toBuffer!")
-                }
                 const metadata = await this.getSpecificVideo()
-                const stream = ytdl(metadata.url, { filter: "audioonly", quality: 140 })
+                const stream = ytdl(metadata.url, { quality: 140 })
 
-                if (this.file && this.file.chosen) {
-                    const audiopath = this.file.path + metadata.title + ".ogg"
+                if (this.file) {
+                    const audio = this.file + (this.fname || metadata.title) + ".ogg"
                     ffmpeg(stream)
                         .audioCodec("libvorbis")
-                        .save(audiopath)
+                        .audioBitrate("128k")
+                        .save(audio)
                         .on("error", (error) => reject(error))
                         .on("end", () => {
                             resolve({
                                 ...metadata,
-                                audioPath: audiopath,
+                                audioPath: audio,
                             })
                         })
-                }
-                if (this.buffer && this.buffer.chosen) {
-                    this.createTempDir()
-                    const audiopath = join(__dirname, "../temp/" + metadata.title + ".ogg")
+                } else {
+                    if (!fs.existsSync(join(__dirname, "../temp"))) {
+                        fs.mkdirSync(join(__dirname, "../temp"))
+                    }
+                    const tempAudio = join(__dirname, "../temp/" + metadata.title + ".ogg")
                     ffmpeg(stream)
                         .audioCodec("libvorbis")
-                        .save(audiopath)
-                        .on("error", (error) => reject(error))
+                        .audioBitrate("128k")
+                        .save(tempAudio)
+                        .on("error", (e) => reject(e))
                         .on("end", async () => {
-                            await fs.promises.readFile(audiopath).then(async (buffer) => {
-                                this.buffer.buffer = buffer
-                                resolve({
-                                    ...metadata,
-                                    audioBuffer: buffer,
-                                })
-                                await fs.promises.unlink(audiopath)
+                            const stream = fs.createReadStream(tempAudio)
+                            const data = []
+                            stream.on("data", (chunk) => {
+                                data.push(chunk)
                             })
+                            stream.on("end", async () => {
+                                await fs.promises.unlink(tempAudio).then(() => {
+                                    resolve({
+                                        ...metadata,
+                                        audioBuffer: Buffer.concat(data),
+                                    })
+                                })
+                            })
+                            stream.on("error", (e) => reject(e))
                         })
                 }
             } catch (e) {

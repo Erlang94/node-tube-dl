@@ -30,5 +30,3 @@ export class YouTubeSearch {
         })
     }
 }
-
-export const YouTube = YouTubeSearch

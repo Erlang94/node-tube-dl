@@ -4,40 +4,46 @@ import ffmpeg from "fluent-ffmpeg"
 import { YouTubeSearch } from "./search"
 
 export class YouTubeAudio extends YouTubeSearch {
-    private codec: string
-    private bitrate: string
-    private channels: number
-    private extension: string
-    private directory: string
+    private audioCodec: string
+    private audioChannels: number
+    private audioBitrate: string
+    private fname: string
+    private ext: string
+    private dir: string
 
     constructor(url: string) {
         super(url)
     }
 
-    public setCodec(codec: string): YouTubeAudio {
-        this.codec = codec
+    public codec(audioCodec: string): YouTubeAudio {
+        this.audioCodec = audioCodec
         return this
     }
 
-    public setBitrate(bitrate: string): YouTubeAudio {
-        this.bitrate = bitrate
+    public bitrate(audioBitrate: string): YouTubeAudio {
+        this.audioBitrate = audioBitrate
         return this
     }
 
-    public setChannels(channels: number): YouTubeAudio {
-        this.channels = channels
+    public channels(audioChannels: number): YouTubeAudio {
+        this.audioChannels = audioChannels
         return this
     }
 
-    public setOutDir(directory: string): YouTubeAudio {
-        directory = directory.endsWith("/") ? directory : directory + "/"
-        if (!fs.existsSync(directory)) fs.mkdirSync(directory)
-        this.directory = directory
+    public outdir(dir: string): YouTubeAudio {
+        dir = dir.endsWith("/") ? dir : dir + "/"
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir)
+        this.dir = dir
         return this
     }
 
-    public setExtension(extension: string): YouTubeAudio {
-        this.extension = extension
+    public extension(ext: string): YouTubeAudio {
+        this.ext = ext
+        return this
+    }
+
+    public filename(fname: string): YouTubeAudio {
+        this.fname = fname
         return this
     }
 
@@ -45,25 +51,23 @@ export class YouTubeAudio extends YouTubeSearch {
         return new Promise(async (resolve, reject) => {
             try {
                 const metadata = await this.getSpecificVideo()
-                const audiopath = this.directory + metadata.title + this.extension
-                const stream = ytdl(metadata.url, { filter: "audioonly", quality: 140 })
+                const stream = ytdl(metadata.url, { quality: 140 })
+                const audioPath = this.dir + (this.fname || metadata.title) + this.ext
 
                 ffmpeg(stream)
-                    .audioCodec(this.codec)
-                    .audioBitrate(this.bitrate)
-                    .audioChannels(this.channels)
-                    .save(audiopath)
-                    .on("error", (error) => reject(error))
+                    .audioCodec(this.audioCodec)
+                    .audioBitrate(this.audioBitrate)
+                    .audioChannels(this.audioChannels)
+                    .save(audioPath)
+                    .on("error", (e) => reject(e))
                     .on("end", () => {
                         resolve({
                             ...metadata,
-                            audio: {
-                                path: audiopath,
-                            },
+                            audioPath,
                         })
                     })
-            } catch (error) {
-                reject(error)
+            } catch (e) {
+                reject(e)
             }
         })
     }

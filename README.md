@@ -17,11 +17,12 @@ const url = "https://youtube.com/watch?v=_QW9gBdDU1c"
 const myfolder = "./bin/"
 
 new YouTubeAudio(url)
-    .setCodec("aac") // Get available codec -> ffmpeg.org
-    .setBitrate("128k")
-    .setChannels(2)
-    .setOutDir(myfolder)
-    .setExtension(".m4a")
+    .codec("aac") // Get available audio codec from FFmpeg docs
+    .bitrate("128k")
+    .channels(2)
+    .outdir(myfolder)
+    // .filename("my_music") // set filename (optional). by default the file name uses the title of the video
+    .extension(".m4a")
     .download()
     .then(result => console.log(result))
     .catch(e => console.log(e))
@@ -36,26 +37,27 @@ const fs = require("fs/promises")
 
 const url = "https://youtube.com/watch?v=_QW9gBdDU1c"
 
-// Example toBuffer
+// Example outputBuffer
 // Audio output encoded to Ogg Vorbis (libvorbis), Audio file extension: .ogg
 new YouTubeAudioV2(url)
-    .setToBuffer()
+    .outputBuffer()
     .download()
-    .then(async (data) => {
+    .then(async (result) => {
         await fs.mkdir("./bin/")
-        await fs.writeFile("./bin/audio.ogg", data.audioBuffer)
+        await fs.writeFile("./bin/audio.ogg", result.audioBuffer)
         
-        console.log(data)
+        console.log(result)
     })
     .catch((e) => console.log(e))
 
-// Example toFile
+// Example outputFile
 // Audio output encoded to Ogg Vorbis (libvorbis), Audio file extension: .ogg
 new YouTubeAudioV2(url)
-    .setToFile("./bin") // path to your folder
+    .outputFile("./bin") // path to your folder
+    // .filename("my_music") // set filename (optional). by default the file name uses the title of the video
     .download()
-    .then((data) => {
-        console.log(data)
+    .then((result) => {
+        console.log(result)
     })
     .catch((e) => console.log(e))
 ```
@@ -70,8 +72,9 @@ const url = "https://youtube.com/watch?v=_QW9gBdDU1c"
 const myfolder = "./bin/"
 
 new YouTubeVideo(url)
-    .setQuality("480p") // Available quality: 144p, 240p, 360p, 480p, 720p, 1080p, 1440p
-    .setOutDir(myfolder)
+    .quality("720p") // Available quality: 144p, 240p, 360p, 480p, 720p, 1080p
+    .outdir(myfolder)
+    // .filename("my_video") // set filename (optional). by default the file name uses the title of the video
     .download()
     .then(result => console.log(result))
     .catch(e => console.log(e))
