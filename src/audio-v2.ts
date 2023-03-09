@@ -5,18 +5,20 @@ import ffmpeg from "fluent-ffmpeg"
 import { YouTubeSearch } from "./search"
 
 export class YouTubeAudioV2 extends YouTubeSearch {
-    private file: string | null
+    private dir: string | null
     private useBuffer: boolean
     private fname: string
 
     constructor(url: string) {
         super(url)
-        this.file = null
+        this.dir = null
         this.useBuffer = false
     }
 
-    public outputFile(path: string): YouTubeAudioV2 {
-        this.file = path
+    public outputFile(dir: string): YouTubeAudioV2 {
+        dir = dir.endsWith("/") ? dir : dir + "/"
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir)
+        this.dir = dir
         return this
     }
 
@@ -36,8 +38,8 @@ export class YouTubeAudioV2 extends YouTubeSearch {
                 const metadata = await this.getSpecificVideo()
                 const stream = ytdl(metadata.url, { quality: 140 })
 
-                if (this.file) {
-                    const audio = this.file + (this.fname || metadata.title) + ".ogg"
+                if (this.dir) {
+                    const audio = this.dir + (this.fname || metadata.title) + ".ogg"
                     ffmpeg(stream)
                         .audioCodec("libvorbis")
                         .audioBitrate("128k")

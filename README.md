@@ -33,7 +33,7 @@ new YouTubeAudio(url)
 ```js
 // import { YouTubeAudioV2 } from "node-tube-dl" // Typescript
 const { YouTubeAudioV2 } = require("node-tube-dl")
-const fs = require("fs/promises")
+const fs = require("fs")
 
 const url = "https://youtube.com/watch?v=_QW9gBdDU1c"
 
@@ -43,8 +43,10 @@ new YouTubeAudioV2(url)
     .outputBuffer()
     .download()
     .then(async (result) => {
-        await fs.mkdir("./bin/")
-        await fs.writeFile("./bin/audio.ogg", result.audioBuffer)
+        if (!fs.existsSync("./bin/")) {
+            await fs.promises.mkdir("./bin/")
+        }
+        await fs.promises.writeFile("./bin/audio.ogg", result.audioBuffer)
         
         console.log(result)
     })

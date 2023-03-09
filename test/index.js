@@ -36,7 +36,7 @@ function test2(url, outType, filename) {
         }
         case "file": {
             new YouTubeAudioV2(url)
-                .outputFile("test/bin/")
+                .outputFile("test/bin")
                 .filename(filename)
                 .download()
                 .then((data) => {
@@ -47,7 +47,7 @@ function test2(url, outType, filename) {
         }
         case "file2": {
             new YouTubeAudioV2(url)
-                .outputFile("test/bin/")
+                .outputFile("test/bin")
                 .download()
                 .then((data) => {
                     console.log(data)
@@ -109,8 +109,8 @@ function test4(query, p) {
 const url = "https://youtube.com/watch?v=_QW9gBdDU1c"
 const query = "Axel Johansson"
 
-test1(url)
-// test2(url, "buffer")
+// test1(url)
+test2(url, "file2")
 // test3(url, "my_music")
 // test4(query, "all")
 
