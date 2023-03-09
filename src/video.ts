@@ -1,6 +1,5 @@
 import fs from "node:fs"
 import { join } from "node:path"
-import { Readable } from "node:stream"
 import { randomBytes } from "node:crypto"
 import ytdl from "ytdl-core"
 import ffmpeg from "fluent-ffmpeg"
