@@ -1,5 +1,6 @@
 import fs from "node:fs"
 import { join } from "node:path"
+import { randomBytes } from "node:crypto"
 import ytdl from "ytdl-core"
 import ffmpeg from "fluent-ffmpeg"
 import { YouTubeSearch } from "./search"
@@ -36,7 +37,7 @@ export class YouTubeAudioV2 extends YouTubeSearch {
         return new Promise(async (resolve, reject) => {
             try {
                 const metadata = await this.getSpecificVideo()
-                const stream = ytdl(metadata.url, { quality: 140 })
+                const stream = ytdl(metadata.url, { filter: "audioonly", quality: 140 })
 
                 if (this.dir) {
                     const audio = this.dir + (this.fname || metadata.title) + ".ogg"
@@ -55,13 +56,13 @@ export class YouTubeAudioV2 extends YouTubeSearch {
                     if (!fs.existsSync(join(__dirname, "../temp"))) {
                         fs.mkdirSync(join(__dirname, "../temp"))
                     }
-                    const tempAudio = join(__dirname, "../temp/" + metadata.title + ".ogg")
+                    const tempAudio = join(__dirname, "../temp/" + randomBytes(50).toString("hex") + ".ogg")
                     ffmpeg(stream)
                         .audioCodec("libvorbis")
                         .audioBitrate("128k")
                         .save(tempAudio)
                         .on("error", (e) => reject(e))
-                        .on("end", async () => {
+                        .on("end", () => {
                             const stream = fs.createReadStream(tempAudio)
                             const data = []
                             stream.on("data", (chunk) => {

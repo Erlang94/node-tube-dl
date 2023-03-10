@@ -51,7 +51,7 @@ export class YouTubeAudio extends YouTubeSearch {
         return new Promise(async (resolve, reject) => {
             try {
                 const metadata = await this.getSpecificVideo()
-                const stream = ytdl(metadata.url, { quality: 140 })
+                const stream = ytdl(metadata.url, { filter: "audioonly", quality: 140 })
                 const audioPath = this.dir + (this.fname || metadata.title) + this.ext
 
                 ffmpeg(stream)

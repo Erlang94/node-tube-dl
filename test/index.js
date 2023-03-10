@@ -1,5 +1,4 @@
 const { YouTubeVideo, YouTubeAudio, YouTubeSearch, YouTubeAudioV2 } = require("../lib")
-const fs = require("fs/promises")
 
 function test1(url, filename) {
     if (filename) {
@@ -26,10 +25,8 @@ function test2(url, outType, filename) {
             new YouTubeAudioV2(url)
                 .outputBuffer()
                 .download()
-                .then(async (data) => {
-                    await fs.writeFile("test/bin/audio.ogg", data.audioBuffer).then(() => {
-                        console.log(data)
-                    })
+                .then((data) => {
+                    console.log(data)
                 })
                 .catch((e) => console.log(e))
             break
@@ -110,8 +107,8 @@ const url = "https://youtube.com/watch?v=_QW9gBdDU1c"
 const query = "Axel Johansson"
 
 // test1(url)
-test2(url, "file2")
-// test3(url, "my_music")
+// test2(url, "file2")
+test3(url)
 // test4(query, "all")
 
 process.on("SIGINT", () => {

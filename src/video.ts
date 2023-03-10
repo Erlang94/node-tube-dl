@@ -31,7 +31,7 @@ export class YouTubeVideo extends YouTubeSearch {
         return this
     }
 
-    public async download(): Promise<any> {
+    public download(): Promise<any> {
         return new Promise(async (resolve, reject) => {
             try {
                 const metadata = await this.getSpecificVideo()
@@ -41,7 +41,7 @@ export class YouTubeVideo extends YouTubeSearch {
                 if (!fs.existsSync(join(__dirname, "../temp"))) {
                     await fs.promises.mkdir(join(__dirname, "../temp"))
                 }
-                const tempAudio = join(__dirname, "../temp" + randomBytes(9).toString("hex") + ".m4a")
+                const tempAudio = join(__dirname, "../temp/" + randomBytes(50).toString("hex") + ".m4a")
 
                 const videoPath = this.dir + (this.fname || metadata.title) + ".mp4"
 
