@@ -53,7 +53,12 @@ export class YouTubeVideo extends YouTubeSearch {
                             .addInput(tempAudio)
                             .outputOptions(["-map", "0", "-map", "1:a", "-c:v", "copy", "-shortest"])
                             .save(videoPath)
-                            .on("error", (e) => reject(e))
+                            .on("error", async (e) => {
+                                if (fs.existsSync(tempAudio)) {
+                                    await fs.promises.unlink(tempAudio)
+                                }
+                                reject(e)
+                            })
                             .on("end", async () => {
                                 await fs.promises.unlink(tempAudio).then(() => {
                                     resolve({

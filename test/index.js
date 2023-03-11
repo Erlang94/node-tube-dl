@@ -11,7 +11,7 @@ function test1(url, filename) {
             .catch((e) => console.log(e))
     } else {
         new YouTubeVideo(url)
-            .quality("720p")
+            .quality("144p")
             .outdir("test/bin/")
             .download()
             .then((data) => console.log(data))
@@ -106,9 +106,9 @@ function test4(query, p) {
 const url = "https://youtube.com/watch?v=_QW9gBdDU1c"
 const query = "Axel Johansson"
 
-// test1(url)
+test1(url)
 // test2(url, "file2")
-test3(url)
+// test3(url)
 // test4(query, "all")
 
 process.on("SIGINT", () => {
